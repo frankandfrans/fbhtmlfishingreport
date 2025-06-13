@@ -79,16 +79,26 @@
       });
     }
 
-    function extractImages(attachments) {
-      if (!attachments || !attachments.data) return [];
-      const images = [];
-      attachments.data.forEach(item => {
-        if (item.media && item.media.image && item.media.image.src) {
-          images.push(item.media.image.src);
+
+function extractImages(attachments) {
+  if (!attachments || !attachments.data) return [];
+  const images = [];
+  attachments.data.forEach(item => {
+    // If it has subattachments (multi-photo post)
+    if (item.subattachments && item.subattachments.data) {
+      item.subattachments.data.forEach(subitem => {
+        if (subitem.media && subitem.media.image && subitem.media.image.src) {
+          images.push(subitem.media.image.src);
         }
       });
-      return images;
     }
+    // If it is a single image
+    else if (item.media && item.media.image && item.media.image.src) {
+      images.push(item.media.image.src);
+    }
+  });
+  return images;
+}
 
     function displayPost(post) {
       const lines = post.message.split('\n');
